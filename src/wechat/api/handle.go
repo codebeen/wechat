@@ -1,13 +1,13 @@
-package model
+package api
 
 import (
 	"encoding/xml"
 	"github.com/gin-gonic/gin"
-	"../conf"
-	"../utils"
+	"wechat/utils"
 	"net/http"
 	"sort"
 	"time"
+	"wechat/model"
 )
 
 // Validator url is wechat send
@@ -17,7 +17,7 @@ func HandleCheckSignature(c *gin.Context) {
 	nonce, _ := c.GetQuery("nonce")
 	echoStr, _ := c.GetQuery("echostr")
 
-	tmpStrings := []string{conf.Conf.App.Token, timeStamp, nonce}
+	tmpStrings := []string{utils.Conf.App.Token, timeStamp, nonce}
 	sort.Strings(tmpStrings)
 	tmpStr := tmpStrings[0] + tmpStrings[1] + tmpStrings[2]
 	tmp := utils.StrToSha1(tmpStr)
@@ -30,7 +30,7 @@ func HandleCheckSignature(c *gin.Context) {
 
 // Handle request
 func HandleRequest(c *gin.Context) {
-	var base BaseMsg
+	var base model.BaseMsg
 	contentType := c.Request.Header.Get("Content-Type")
 	switch contentType {
 	case "text/xml":
@@ -57,37 +57,37 @@ func HandleRequest(c *gin.Context) {
 }
 
 // Handle reply
-func handleReply(base BaseMsg, body []byte) ([]byte, error) {
+func handleReply(base model.BaseMsg, body []byte) ([]byte, error) {
 	// text msg
 	if base.MsgType == "text" {
-		var xmlContent TextMsg
+		var xmlContent model.TextMsg
 		err := xml.Unmarshal(body, &xmlContent)
 		if err != nil {
 			return nil, err
 		}
-		result := TextMsg{}
-		result.ToUserName = cDataString{Value: xmlContent.FromUserName.Value}
-		result.FromUserName = cDataString{Value: xmlContent.ToUserName.Value}
+		result := model.TextMsg{}
+		result.ToUserName = model.CDataString{Value: xmlContent.FromUserName.Value}
+		result.FromUserName = model.CDataString{Value: xmlContent.ToUserName.Value}
 		result.CreateTime = time.Now().Unix()
-		result.MsgType = cDataString{Value: xmlContent.MsgType.Value}
-		result.Content = cDataString{Value: xmlContent.Content.Value}
+		result.MsgType = model.CDataString{Value: xmlContent.MsgType.Value}
+		result.Content = model.CDataString{Value: xmlContent.Content.Value}
 		reply, _ := xml.Marshal(result)
 		return reply, nil
 	}
 
-	// image msg
-	if base.MsgType == "image" {
-		var xmlContent ReceiveImageMsg
+	// Image msg
+	if base.MsgType == "Image" {
+		var xmlContent model.ReceiveImageMsg
 		err := xml.Unmarshal(body, &xmlContent)
 		if err != nil {
 			return nil, err
 		}
-		result := ReplyImageMsg{}
-		result.ToUserName = cDataString{Value: xmlContent.FromUserName.Value}
-		result.FromUserName = cDataString{Value: xmlContent.ToUserName.Value}
+		result := model.ReplyImageMsg{}
+		result.ToUserName = model.CDataString{Value: xmlContent.FromUserName.Value}
+		result.FromUserName = model.CDataString{Value: xmlContent.ToUserName.Value}
 		result.CreateTime = time.Now().Unix()
-		result.MsgType = cDataString{Value: xmlContent.MsgType.Value}
-		result.Image = image{MediaId: cDataString{Value: xmlContent.MediaId.Value}}
+		result.MsgType = model.CDataString{Value: xmlContent.MsgType.Value}
+		result.Image = model.Image{MediaId: model.CDataString{Value: xmlContent.MediaId.Value}}
 		reply, _ := xml.Marshal(result)
 		return reply, nil
 	}
