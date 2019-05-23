@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/markbest/wechat/utils"
+	"../utils"
 	"io/ioutil"
 	"os"
 	"time"

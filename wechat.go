@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/markbest/wechat/conf"
-	"github.com/markbest/wechat/middleware"
-	"github.com/markbest/wechat/model"
+	"./conf"
+	"./middleware"
+	"./model"
 )
 
 func main() {

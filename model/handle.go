@@ -3,8 +3,8 @@ package model
 import (
 	"encoding/xml"
 	"github.com/gin-gonic/gin"
-	"github.com/markbest/wechat/conf"
-	"github.com/markbest/wechat/utils"
+	"../conf"
+	"../utils"
 	"net/http"
 	"sort"
 	"time"
